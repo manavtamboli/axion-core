@@ -1,2 +1,6 @@
-# axion-lifecycle
-Axion artifact for Lifecycle Extensions.
+# axion-core
+Includes axion artifacts:
+- Binding
+- Lifecycle
+- UI and Views
+- Navigation
