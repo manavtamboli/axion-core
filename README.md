@@ -1,5 +1,5 @@
 # axion-core
-Includes axion artifacts:
+Includes core axion artifacts:
 - Binding
 - Lifecycle
 - UI and Views
