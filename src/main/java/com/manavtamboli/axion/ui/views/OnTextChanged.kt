@@ -1,4 +1,4 @@
-package com.manavtamboli.axion.ui
+package com.manavtamboli.axion.ui.views
 
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged

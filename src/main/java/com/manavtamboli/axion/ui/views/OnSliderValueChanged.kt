@@ -1,4 +1,4 @@
-package com.manavtamboli.axion.ui
+package com.manavtamboli.axion.ui.views
 
 import androidx.databinding.BindingAdapter
 import com.google.android.material.slider.Slider
