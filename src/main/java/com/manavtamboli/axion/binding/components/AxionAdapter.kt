@@ -14,6 +14,7 @@ import com.manavtamboli.axion.lifecycle.LifecycleLazy.Companion.lifecycleLazy
 class AxionAdapter<B : ViewBinding, T> private constructor(
     private val bindingClass : Class<B>,
     diffUtil: DiffUtil.ItemCallback<T>,
+    private val onCreate : (B.() -> Unit)?,
     private val onBind : ItemEvent<B, T>?,
     private val onItemClick : ItemEvent<B, T>?,
     private val onItemLongClick : ItemEvent<B, T>?
@@ -21,6 +22,7 @@ class AxionAdapter<B : ViewBinding, T> private constructor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<B> {
         val binding = bindingClass.inflate(LayoutInflater.from(parent.context), parent, false)
+        onCreate?.invoke(binding)
         return ViewHolder(binding)
     }
 
@@ -41,6 +43,7 @@ class AxionAdapter<B : ViewBinding, T> private constructor(
     }
 
     interface Creator<B : ViewBinding, T> {
+        fun onCreate(block : B.() -> Unit)
         fun onBind(itemEvent: ItemEvent<B, T>)
         fun onItemClick(itemEvent: ItemEvent<B, T>)
         fun onItemLongClick(itemEvent: ItemEvent<B, T>)
@@ -49,17 +52,19 @@ class AxionAdapter<B : ViewBinding, T> private constructor(
     companion object {
         @Suppress("FunctionName")
         fun <B : ViewBinding, T> LifecycleOwner.AxionAdapter(bindingClass: Class<B>, diffUtil: DiffUtil.ItemCallback<T>, block : Creator<B, T>.() -> Unit): Lazy<AxionAdapter<B, T>> {
+            var onCreate : (B.() -> Unit)? = null
             var onBind : ItemEvent<B, T>? = null
             var onItemClick : ItemEvent<B, T>? = null
             var onItemLongClick : ItemEvent<B, T>? = null
 
             object : Creator<B, T> {
+                override fun onCreate(block : B.() -> Unit) { onCreate = block }
                 override fun onBind(itemEvent: ItemEvent<B, T>) { onBind = itemEvent }
                 override fun onItemClick(itemEvent: ItemEvent<B, T>) { onItemClick = itemEvent }
                 override fun onItemLongClick(itemEvent: ItemEvent<B, T>) { onItemLongClick = itemEvent }
             }.apply(block)
 
-            return lifecycleLazy { AxionAdapter(bindingClass, diffUtil, onBind, onItemClick, onItemLongClick) }
+            return lifecycleLazy { AxionAdapter(bindingClass, diffUtil, onCreate, onBind, onItemClick, onItemLongClick) }
         }
     }
 }
