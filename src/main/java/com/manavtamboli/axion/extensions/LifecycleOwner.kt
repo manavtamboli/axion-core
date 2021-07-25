@@ -8,6 +8,12 @@ import androidx.lifecycle.LifecycleOwner
 
 private class InvalidLifecycleOwnerException : Exception("Invalid LifecycleOwner. Must be a Fragment or ComponentActivity")
 
+internal val LifecycleOwner.activity : ComponentActivity get() = when (this){
+    is Fragment -> requireActivity()
+    is ComponentActivity -> this
+    else -> throw InvalidLifecycleOwnerException()
+}
+
 internal val LifecycleOwner.context : Context get() = when (this){
     is Fragment -> requireContext()
     is ComponentActivity -> this

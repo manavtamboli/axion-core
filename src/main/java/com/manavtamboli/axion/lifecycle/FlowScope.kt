@@ -23,7 +23,7 @@ interface FlowScope {
             block : suspend FlowScope.() -> Unit
         ) {
             lifecycleScope.launch {
-                repeatOnLifecycle(CREATED){
+                repeatOnLifecycle(STARTED){
                     object : FlowScope {
                         override fun <T> collectFlow(flow: Flow<T>, collector: suspend (T) -> Unit) {
                             lifecycleScope.launch(context) {
