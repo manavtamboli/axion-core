@@ -3,13 +3,17 @@ package com.manavtamboli.axion.binding.components
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.LifecycleOwner
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.manavtamboli.axion.binding.Binder.Companion.inflate
+import com.manavtamboli.axion.extensions.log
 import com.manavtamboli.axion.lifecycle.LifecycleLazy.Companion.lifecycleLazy
+import com.manavtamboli.axion.lifecycle.LifecycleLazy.Initialization.OnStart
+import com.manavtamboli.axion.lifecycle.doOnResume
+import com.manavtamboli.axion.lifecycle.doOnStart
 
 class AxionAdapter<B : ViewBinding, T> private constructor(
     private val bindingClass : Class<B>,
@@ -47,24 +51,34 @@ class AxionAdapter<B : ViewBinding, T> private constructor(
         fun onBind(itemEvent: ItemEvent<B, T>)
         fun onItemClick(itemEvent: ItemEvent<B, T>)
         fun onItemLongClick(itemEvent: ItemEvent<B, T>)
+        fun attachTo(recyclerViewProvider : () -> RecyclerView)
     }
 
     companion object {
         @Suppress("FunctionName")
-        fun <B : ViewBinding, T> LifecycleOwner.AxionAdapter(bindingClass: Class<B>, diffUtil: DiffUtil.ItemCallback<T>, block : Creator<B, T>.() -> Unit): Lazy<AxionAdapter<B, T>> {
-            var onCreate : (B.() -> Unit)? = null
-            var onBind : ItemEvent<B, T>? = null
-            var onItemClick : ItemEvent<B, T>? = null
-            var onItemLongClick : ItemEvent<B, T>? = null
+        fun <B : ViewBinding, T> Fragment.AxionAdapter(bindingClass: Class<B>, diffUtil: DiffUtil.ItemCallback<T>, block : Creator<B, T>.() -> Unit): Lazy<AxionAdapter<B, T>> {
+            return lifecycleLazy(OnStart) {
+                var onCreate : (B.() -> Unit)? = null
+                var onBind : ItemEvent<B, T>? = null
+                var onItemClick : ItemEvent<B, T>? = null
+                var onItemLongClick : ItemEvent<B, T>? = null
+                var rViewProvider : (() -> RecyclerView)? = null
 
-            object : Creator<B, T> {
-                override fun onCreate(block : B.() -> Unit) { onCreate = block }
-                override fun onBind(itemEvent: ItemEvent<B, T>) { onBind = itemEvent }
-                override fun onItemClick(itemEvent: ItemEvent<B, T>) { onItemClick = itemEvent }
-                override fun onItemLongClick(itemEvent: ItemEvent<B, T>) { onItemLongClick = itemEvent }
-            }.apply(block)
+                object : Creator<B, T> {
+                    override fun onCreate(block : B.() -> Unit) { onCreate = block }
+                    override fun onBind(itemEvent: ItemEvent<B, T>) { onBind = itemEvent }
+                    override fun onItemClick(itemEvent: ItemEvent<B, T>) { onItemClick = itemEvent }
+                    override fun onItemLongClick(itemEvent: ItemEvent<B, T>) { onItemLongClick = itemEvent }
+                    override fun attachTo(recyclerViewProvider :() -> RecyclerView) { rViewProvider = recyclerViewProvider }
+                }.apply(block)
 
-            return lifecycleLazy { AxionAdapter(bindingClass, diffUtil, onCreate, onBind, onItemClick, onItemLongClick) }
+                AxionAdapter(bindingClass, diffUtil, onCreate, onBind, onItemClick, onItemLongClick)
+                    .also {
+                        doOnStart {
+                            rViewProvider?.invoke()?.let { r -> r.adapter = it }
+                        }
+                    }
+            }
         }
     }
 }

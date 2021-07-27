@@ -32,9 +32,9 @@ class LifecycleLazy<out T> private constructor(
             return _value as T
         }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    private fun onCreate(){
-        if (initializeOn == Initialization.OnCreate) initialize()
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    private fun onStart(){
+        if (initializeOn == Initialization.OnStart) initialize()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -42,7 +42,7 @@ class LifecycleLazy<out T> private constructor(
         _value = Empty
     }
 
-    enum class Initialization { Lazily, OnCreate }
+    enum class Initialization { Lazily, OnStart }
 
     companion object {
         fun <T> LifecycleOwner.lifecycleLazy(initializer : () -> T) : Lazy<T> = LifecycleLazy(this, initializer, Initialization.Lazily)

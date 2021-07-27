@@ -7,7 +7,7 @@ import androidx.navigation.fragment.NavHostFragment
 
 fun FragmentManager.findNavController(@IdRes containerResId : Int) : NavController {
     return findFragmentById(containerResId).run {
-        require(this is NavHostFragment) { "Given containerResId must be associated to a NavHostFragment, but is $this." }
+        require(this is NavHostFragment) { "Given containerResId must be associated to a NavHostFragment." }
         return@run navController
     }
 }

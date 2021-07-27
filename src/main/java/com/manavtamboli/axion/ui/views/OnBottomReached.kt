@@ -15,6 +15,8 @@ fun interface OnBottomReached {
 
     companion object {
         /**
+         * Known issues -> Won't work if list items don't fill the whole recycler view,.
+         *
          * @return [RecyclerView.OnScrollListener] for removing manually which is usually not needed.
          * */
         fun RecyclerView.addOnBottomReached(onBottomReachedListener: OnBottomReached) : Registration {
