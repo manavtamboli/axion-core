@@ -9,10 +9,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.manavtamboli.axion.binding.Binder.Companion.inflate
-import com.manavtamboli.axion.extensions.log
 import com.manavtamboli.axion.lifecycle.LifecycleLazy.Companion.lifecycleLazy
 import com.manavtamboli.axion.lifecycle.LifecycleLazy.Initialization.OnStart
-import com.manavtamboli.axion.lifecycle.doOnResume
 import com.manavtamboli.axion.lifecycle.doOnStart
 
 class AxionAdapter<B : ViewBinding, T> private constructor(

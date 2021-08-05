@@ -1,13 +1,14 @@
 package com.manavtamboli.axion.extensions
 
+import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil
 import kotlin.reflect.KProperty1
 
-@Suppress("FunctionName")
-fun <C> UniqueDiff(property : KProperty1<C, *>) = object : DiffUtil.ItemCallback<C>() {
+fun <C> UniqueDiff(areItemsTheSame : (C, C) -> Boolean) = object : DiffUtil.ItemCallback<C>(){
+    override fun areItemsTheSame(oldItem: C, newItem: C) = areItemsTheSame(oldItem, newItem)
 
-    override fun areItemsTheSame(oldItem: C, newItem: C) = property.get(oldItem) == property.get(newItem)
-
-    @Suppress("DiffUtilEquals")
+    @SuppressLint("DiffUtilEquals")
     override fun areContentsTheSame(oldItem: C, newItem: C) = oldItem == newItem
 }
+
+fun <C> UniqueDiff(property : KProperty1<C, *>) = UniqueDiff<C>{ oldItem, newItem -> property.get(oldItem) == property.get(newItem) }

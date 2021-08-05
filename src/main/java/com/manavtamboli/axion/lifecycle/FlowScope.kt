@@ -1,11 +1,7 @@
 package com.manavtamboli.axion.lifecycle
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Lifecycle.State.CREATED
+import androidx.lifecycle.*
 import androidx.lifecycle.Lifecycle.State.STARTED
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -23,7 +19,7 @@ interface FlowScope {
             block : suspend FlowScope.() -> Unit
         ) {
             lifecycleScope.launch {
-                repeatOnLifecycle(STARTED){
+                whenStarted {
                     object : FlowScope {
                         override fun <T> collectFlow(flow: Flow<T>, collector: suspend (T) -> Unit) {
                             lifecycleScope.launch(context) {

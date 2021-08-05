@@ -4,7 +4,7 @@ import android.content.Intent
 import android.content.Intent.*
 import android.net.Uri.parse
 import androidx.lifecycle.LifecycleOwner
-import com.manavtamboli.axion.extensions.activity
+import com.manavtamboli.axion.lifecycle.activity
 
 fun LifecycleOwner.dial(phoneNumber: String, title : String = "Dial"){
     kotlin.runCatching {

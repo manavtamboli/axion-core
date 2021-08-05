@@ -43,3 +43,5 @@ inline fun LifecycleOwner.doOnDestroy(crossinline block : () -> Unit) : Lifecycl
         private fun doOnStart() = block()
     }.apply { lifecycleScope.launchWhenCreated { lifecycle.addObserver(this@apply) } }
 }
+
+inline fun LifecycleOwner.doWhenVisible(crossinline block: () -> Unit) = doOnResume(block)

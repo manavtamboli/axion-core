@@ -1,21 +1,18 @@
 package com.manavtamboli.axion.core.perm
 
-import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.activity.ComponentActivity
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
+import com.manavtamboli.axion.lifecycle.context
+import com.manavtamboli.axion.lifecycle.getLauncher
 
 
-private fun createRequester(
-    contextProducer : () -> Context,
-    launcherProducer : (ActivityResultContract<String, Boolean>,ActivityResultCallback<Boolean>) -> ActivityResultLauncher<String>,
-    shouldShowRequestPermissionRationale : (String) -> Boolean,
-    block : PermissionRequesterScope.() -> Unit
+private fun LifecycleOwner.createRequester(
+    shouldShowRequestPermissionRationale: (String) -> Boolean,
+    block: PermissionRequesterScope.() -> Unit
 ): PermissionRequester {
 
     var onResult : ((Boolean) -> Unit)? = null
@@ -26,10 +23,10 @@ private fun createRequester(
         override fun onShowRequestPermissionRationale(block: () -> Unit) { shouldShow = block }
     }.apply(block)
 
-    val launcher = launcherProducer(ActivityResultContracts.RequestPermission()) { onResult?.invoke(it) }
+    val launcher = getLauncher(RequestPermission()) { onResult?.invoke(it) }
     return PermissionRequester {
         when {
-            ContextCompat.checkSelfPermission(contextProducer(), it) == PERMISSION_GRANTED -> onResult?.invoke(true)
+            ContextCompat.checkSelfPermission(context, it) == PERMISSION_GRANTED -> onResult?.invoke(true)
             shouldShowRequestPermissionRationale(it) -> shouldShow?.invoke()
             else -> launcher.launch(it)
         }
@@ -38,16 +35,12 @@ private fun createRequester(
 
 @Suppress("FunctionName")
 fun Fragment.PermissionRequester(block : PermissionRequesterScope.() -> Unit): PermissionRequester = createRequester(
-    this::requireContext,
-    this::registerForActivityResult,
     this::shouldShowRequestPermissionRationale,
     block
 )
 
 @Suppress("FunctionName")
 fun ComponentActivity.PermissionRequester(block : PermissionRequesterScope.() -> Unit): PermissionRequester = createRequester(
-    { this },
-    this::registerForActivityResult,
     this::shouldShowRequestPermissionRationale,
     block
 )
