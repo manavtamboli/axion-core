@@ -40,6 +40,7 @@ private fun loadContact(uri: Uri, types : List<Int> = listOf(TYPE_MOBILE, TYPE_H
 
 fun Fragment.ContactPicker(block : (String, List<Pair<Int, String>>) -> Unit): Picker {
     val launcher = getLauncher(ActivityResultContracts.PickContact()){
+        it ?: return@getLauncher
         lifecycleScope.launch {
             val (name, numbers) = loadContact(it)
             block(name, numbers)

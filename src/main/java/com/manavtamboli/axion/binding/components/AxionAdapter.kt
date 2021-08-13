@@ -3,7 +3,7 @@ package com.manavtamboli.axion.binding.components
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -54,7 +54,7 @@ class AxionAdapter<B : ViewBinding, T> private constructor(
 
     companion object {
         @Suppress("FunctionName")
-        fun <B : ViewBinding, T> Fragment.AxionAdapter(bindingClass: Class<B>, diffUtil: DiffUtil.ItemCallback<T>, block : Creator<B, T>.() -> Unit): Lazy<AxionAdapter<B, T>> {
+        fun <B : ViewBinding, T> LifecycleOwner.AxionAdapters(bindingClass: Class<B>, diffUtil: DiffUtil.ItemCallback<T>, block : Creator<B, T>.() -> Unit): Lazy<AxionAdapter<B, T>> {
             return lifecycleLazy(OnStart) {
                 var onCreate : (B.() -> Unit)? = null
                 var onBind : ItemEvent<B, T>? = null
