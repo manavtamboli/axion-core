@@ -6,7 +6,7 @@ data class DateRange(override val start: LocalDate, override val endInclusive: L
 
     interface Merger {
         val ranges : List<DateRange>
-        fun addRange(range : DateRange) : List<DateRange>
+        fun submitRange(range : DateRange) : List<DateRange>
     }
 }
 
@@ -17,7 +17,7 @@ private class MergerImpl : DateRange.Merger {
     private var _ranges = listOf<DateRange>()
     override val ranges get() = _ranges
 
-    override fun addRange(range: DateRange) : List<DateRange> {
+    override fun submitRange(range: DateRange) : List<DateRange> {
         return if (_ranges.isEmpty()) {
             _ranges = listOf(range)
             _ranges
