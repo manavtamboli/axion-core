@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 
-class LifecycleLazy<out T> private constructor(
+class LifecycleLazy<out T> (
     private val owner: LifecycleOwner,
     private val initializer : () -> T,
     private val initializeOn : Initialization

@@ -7,7 +7,10 @@ import androidx.lifecycle.LifecycleOwner
 import com.manavtamboli.axion.lifecycle.getLauncher
 
 fun LifecycleOwner.ImagePicker(block: (Uri) -> Unit): Picker {
-    val launcher = getLauncher(GetContent()) { block(it) }
+    val launcher = getLauncher(GetContent()) {
+        it ?: return@getLauncher
+        block(it)
+    }
     return Picker { launcher.launch("image/*") }
 }
 

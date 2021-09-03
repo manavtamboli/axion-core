@@ -12,7 +12,9 @@ interface FlowScope {
 
     fun <T> collectFlow(flow : Flow<T>, collector : suspend (T) -> Unit)
 
-    companion object {
+    companion object
+    {
+        // TODO : ViewLifecycleOwner
         fun LifecycleOwner.flows(
             context : CoroutineContext = EmptyCoroutineContext,
             flowsState : Lifecycle.State = STARTED,

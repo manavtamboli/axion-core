@@ -53,6 +53,7 @@ class AxionAdapter<B : ViewBinding, T> private constructor(
     }
 
     companion object {
+        // FixMe : DoOnStart
         @Suppress("FunctionName")
         fun <B : ViewBinding, T> LifecycleOwner.AxionAdapters(bindingClass: Class<B>, diffUtil: DiffUtil.ItemCallback<T>, block : Creator<B, T>.() -> Unit): Lazy<AxionAdapter<B, T>> {
             return lifecycleLazy(OnStart) {
