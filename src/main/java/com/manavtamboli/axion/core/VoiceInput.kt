@@ -15,19 +15,19 @@ interface VoiceInput {
     fun listen()
 }
 
-fun Fragment.voiceInput(prompt: String? = null, callback: (String?) -> Unit) : VoiceInput =
+fun Fragment.voiceInput(prompt: String? = null, callback: (String) -> Unit) : VoiceInput =
     object : VoiceInputImpl(prompt, callback){
         override val launcher = registerForActivityResult(contract, contractCallback)
     }
 
-fun ComponentActivity.voiceInput(prompt: String? = null, callback: (String?) -> Unit) : VoiceInput =
+fun ComponentActivity.voiceInput(prompt: String? = null, callback: (String) -> Unit) : VoiceInput =
     object : VoiceInputImpl(prompt, callback) {
         override val launcher = registerForActivityResult(contract, contractCallback)
     }
 
 private abstract class VoiceInputImpl(
     private val prompt : String?,
-    private val callback : (String?) -> Unit
+    private val callback : (String) -> Unit
 ) : VoiceInput {
 
     abstract val launcher : ActivityResultLauncher<Unit>
@@ -50,7 +50,7 @@ private abstract class VoiceInputImpl(
             } else null
         }
     }
-    protected val contractCallback = ActivityResultCallback<String?> { callback(it) }
+    protected val contractCallback = ActivityResultCallback<String?> { it?.let(callback) }
 
     final override fun listen() {
         launcher.launch()

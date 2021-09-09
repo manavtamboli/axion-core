@@ -2,7 +2,22 @@ package com.manavtamboli.axion.kotlin
 
 import java.time.LocalDate
 
-data class DateRange(override val start: LocalDate, override val endInclusive: LocalDate) : ClosedRange<LocalDate> {
+data class DateRange(override val start: LocalDate, override val endInclusive: LocalDate, val gap : Long = 0) : ClosedRange<LocalDate>, Iterable<LocalDate> {
+
+    init {
+        require(gap >= 0)
+    }
+
+    override fun iterator(): Iterator<LocalDate> = object : Iterator<LocalDate> {
+
+        private var next = start
+
+        override fun hasNext(): Boolean = next <= endInclusive
+
+        override fun next(): LocalDate = next.also {
+            next = it.plusDays(1 + gap)
+        }
+    }
 
     interface Merger {
         val ranges : List<DateRange>
@@ -11,6 +26,8 @@ data class DateRange(override val start: LocalDate, override val endInclusive: L
 }
 
 operator fun LocalDate.rangeTo(other : LocalDate) = DateRange(this, other)
+
+infix fun DateRange.skip(days : Long) = copy(gap = days)
 
 private class MergerImpl : DateRange.Merger {
 
@@ -34,7 +51,7 @@ private class MergerImpl : DateRange.Merger {
         for ((index, r) in ranges.withIndex()){
             if (r.start > range.start) return ranges.toMutableList().apply { add(index, range) }
         }
-        return ranges + range
+        return ranges.plusElement(range)
     }
 
     private fun diffAll(range : DateRange, ranges : List<DateRange>): List<DateRange> {

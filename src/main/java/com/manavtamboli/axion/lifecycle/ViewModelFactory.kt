@@ -7,6 +7,17 @@ import androidx.lifecycle.ViewModelProvider
 import com.manavtamboli.axion.core.Arc
 
 @Suppress("Unchecked_Cast", "FunctionName")
+inline fun <reified VM : ViewModel> AxionFactory() : ViewModelProvider.Factory {
+    return object : ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return if (modelClass.isAssignableFrom(VM::class.java))
+                VM::class.java.getConstructor().newInstance() as T
+            else throw IllegalStateException()
+        }
+    }
+}
+
+@Suppress("Unchecked_Cast", "FunctionName")
 inline fun <reified VM : ViewModel, reified A1> AxionFactory(arg1 : A1) : ViewModelProvider.Factory {
     return object : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {

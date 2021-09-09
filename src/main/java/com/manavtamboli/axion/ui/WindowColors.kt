@@ -4,23 +4,23 @@ import androidx.annotation.ColorRes
 import androidx.lifecycle.LifecycleOwner
 import com.manavtamboli.axion.core.Arc
 import com.manavtamboli.axion.core.Arc.Companion.applicationContext
+import com.manavtamboli.axion.lifecycle.onStart
 import com.manavtamboli.axion.lifecycle.window
-import com.manavtamboli.axion.lifecycle.doOnStart
 
 fun LifecycleOwner.navBarColor(@ColorRes color : Int){
-    doOnStart {
+    onStart {
         window.navigationBarColor = Arc.require().applicationContext.getColor(color)
     }
 }
 
 fun LifecycleOwner.statusBarColor(@ColorRes color: Int) {
-    doOnStart {
+    onStart {
         window.statusBarColor = Arc.require().applicationContext.getColor(color)
     }
 }
 
 fun LifecycleOwner.systemBarsColor(@ColorRes color: Int){
-    doOnStart {
+    onStart {
         val colorInt = Arc.require().applicationContext.getColor(color)
         window.apply {
             navigationBarColor = colorInt

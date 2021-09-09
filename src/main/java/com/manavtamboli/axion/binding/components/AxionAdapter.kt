@@ -11,7 +11,7 @@ import androidx.viewbinding.ViewBinding
 import com.manavtamboli.axion.binding.Binder.Companion.inflate
 import com.manavtamboli.axion.lifecycle.LifecycleLazy.Companion.lifecycleLazy
 import com.manavtamboli.axion.lifecycle.LifecycleLazy.Initialization.OnStart
-import com.manavtamboli.axion.lifecycle.doOnStart
+import com.manavtamboli.axion.lifecycle.onStart
 
 class AxionAdapter<B : ViewBinding, T> private constructor(
     private val bindingClass : Class<B>,
@@ -73,7 +73,7 @@ class AxionAdapter<B : ViewBinding, T> private constructor(
 
                 AxionAdapter(bindingClass, diffUtil, onCreate, onBind, onItemClick, onItemLongClick)
                     .also {
-                        doOnStart {
+                        onStart {
                             rViewProvider?.invoke()?.let { r -> r.adapter = it }
                         }
                     }
