@@ -4,14 +4,13 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.StyleRes
 import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.manavtamboli.axion.lifecycle.LifecycleLazy.Companion.lifecycleLazy
+import com.manavtamboli.axion.lifecycle.lifecycleLazy
+import com.manavtamboli.axion.lifecycle.viewLifecycleLazy
 import kotlinx.parcelize.Parcelize
-import java.time.LocalDate
 
 fun DatePicker(
     title : String? = null,
@@ -35,7 +34,7 @@ fun Fragment.DatePickers(
     @StyleRes theme : Int? = null,
     constraints : CalendarConstraints? = null,
     block : MaterialDatePicker<Long>.() -> Unit = {  }
-) : Lazy<MaterialDatePicker<Long>> = lifecycleLazy { com.manavtamboli.axion.ui.DatePicker(title, selection, inputMode, theme, constraints, block) }
+) : Lazy<MaterialDatePicker<Long>> = viewLifecycleLazy { com.manavtamboli.axion.ui.DatePicker(title, selection, inputMode, theme, constraints, block) }
 
 fun ComponentActivity.DatePickers(
     title : String? = null,
@@ -46,14 +45,14 @@ fun ComponentActivity.DatePickers(
     block : MaterialDatePicker<Long>.() -> Unit = {  }
 ) : Lazy<MaterialDatePicker<Long>> = lifecycleLazy { com.manavtamboli.axion.ui.DatePicker(title, selection, inputMode, theme, constraints, block) }
 
-fun LifecycleOwner.DateRangePicker(
+fun Fragment.DateRangePicker(
     title : String? = null,
     selection : Pair<Long, Long>? = null,
     inputMode : Int? = null,
     @StyleRes theme : Int? = null,
     constraints : CalendarConstraints? = null,
     block : MaterialDatePicker<Pair<Long, Long>>.() -> Unit = {  }
-) = lifecycleLazy {
+) = viewLifecycleLazy {
     MaterialDatePicker.Builder.dateRangePicker().apply {
         setCalendarConstraints(constraints)
         setSelection(selection)

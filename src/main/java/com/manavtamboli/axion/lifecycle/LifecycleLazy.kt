@@ -1,52 +1,75 @@
 package com.manavtamboli.axion.lifecycle
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.activity.ComponentActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle.State
 
-class LifecycleLazy<out T> (
-    private val owner: LifecycleOwner,
-    private val initializer : () -> T,
-    private val initializeOn : Initialization
-) : Lazy<T>, LifecycleObserver {
+fun <T> Lazy<T>.initializeOn(owner: LifecycleOwner, initState: State) : Lazy<T> = AutoLifecycleLazy(owner, initState){ value }
 
-    private object Empty
-    private val lifecycle get() = owner.lifecycle
+fun <T> Fragment.viewLifecycleLazy(initializer : () -> T) : Lazy<T> = object : LifecycleLazy<T>(initializer) {
+    override val owner: LifecycleOwner
+        get() = viewLifecycleOwner
+}
 
-    private var _value : Any? = Empty
+fun <T> Fragment.lifecycleLazy(initializer: () -> T): Lazy<T> = object : LifecycleLazy<T>(initializer){
+    override val owner: LifecycleOwner
+        get() = this@lifecycleLazy
+}
+fun <T> Fragment.lifecycleLazy(initState: State, initializer: () -> T) : Lazy<T> = AutoLifecycleLazy(this, initState, initializer)
 
-    private fun initialize(){
+
+fun <T> ComponentActivity.lifecycleLazy(initializer: () -> T) : Lazy<T> = object : LifecycleLazy<T>(initializer) {
+    override val owner: LifecycleOwner
+        get() = this@lifecycleLazy
+}
+
+fun <T> ComponentActivity.lifecycleLazy(initState: State, initializer: () -> T) : Lazy<T> = AutoLifecycleLazy(this, initState, initializer)
+
+abstract class LifecycleLazy<T> (protected val initializer: () -> T): Lazy<T>, LifecycleObserver {
+
+    abstract val owner : LifecycleOwner
+
+    protected object Empty
+    protected var _value : Any? = Empty
+
+    protected open fun initialize(){
         if (!isInitialized()) {
             _value = initializer()
-            lifecycle.addObserver(this)
+            owner.lifecycle.addObserver(this)
         }
     }
 
-    override fun isInitialized() = _value != Empty
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    protected fun onDestroy(){
+        _value = Empty
+    }
 
-    @Suppress("UNCHECKED_CAST")
-    override val value: T
-        get(){
+    @Suppress("Unchecked_Cast")
+    final override val value: T
+        get() {
             initialize()
             return _value as T
         }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    private fun onStart(){
-        if (initializeOn == Initialization.OnStart) initialize()
+    final override fun isInitialized() = _value != Empty
+}
+
+private class AutoLifecycleLazy<T>(override val owner: LifecycleOwner, private val initState : State, initializer: () -> T) : LifecycleLazy<T>(initializer) {
+
+    init {
+        owner.lifecycle.addObserver(this)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun onDestroy(){
-        _value = Empty
+    override fun initialize() {
+        if (!isInitialized())
+            _value = initializer()
     }
 
-    enum class Initialization { Lazily, OnStart }
-
-    companion object {
-        fun <T> LifecycleOwner.lifecycleLazy(initializer : () -> T) : Lazy<T> = LifecycleLazy(this, initializer, Initialization.Lazily)
-        fun <T> LifecycleOwner.lifecycleLazy(initializeOn: Initialization, initializer : () -> T) : Lazy<T> =
-            LifecycleLazy(this, initializer, initializeOn)
+    @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
+    private fun onAny(){
+        if (owner.lifecycle.currentState == initState && !isInitialized()){
+            initialize()
+        }
     }
 }

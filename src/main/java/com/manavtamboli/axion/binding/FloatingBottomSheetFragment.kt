@@ -1,4 +1,4 @@
-package com.manavtamboli.axion.binding.components
+package com.manavtamboli.axion.binding
 
 import android.app.Dialog
 import android.os.Bundle
