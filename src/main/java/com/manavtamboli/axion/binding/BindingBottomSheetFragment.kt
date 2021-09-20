@@ -8,20 +8,21 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-open class BindingBottomSheetFragment<B : ViewBinding>(bindingClass : Class<B>) : BottomSheetDialogFragment(), BindingComponent<B> by BindingComponentImpl(bindingClass) {
+open class BindingBottomSheetFragment<B : ViewBinding>(bindingClass : Class<B>) : BottomSheetDialogFragment(), BindingComponent<B> {
+
+    private val binder = Binder(bindingClass)
 
     /**
      * Property to access the generated binding.
      *
      * Must be accessed starting from [onCreateView] and valid upto [onDestroyView].
      * */
-    final override val binding: B get() = super.binding
-
+    final override val binding get() = binder.binding
 
     final override fun generateBinding(inflater: LayoutInflater, viewGroup: ViewGroup?, lifecycleOwner: LifecycleOwner) {
-        super.generateBinding(inflater, viewGroup, lifecycleOwner)
+        binder.generateBinding(inflater, viewGroup, lifecycleOwner)
+        binding.initialize()
     }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         generateBinding(inflater, container, viewLifecycleOwner)
