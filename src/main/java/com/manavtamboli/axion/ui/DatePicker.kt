@@ -1,66 +1,44 @@
 package com.manavtamboli.axion.ui
 
 import androidx.activity.ComponentActivity
-import androidx.annotation.StyleRes
 import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker
+import com.google.android.material.datepicker.MaterialDatePicker.Builder.dateRangePicker
 import com.manavtamboli.axion.lifecycle.lifecycleLazy
-import com.manavtamboli.axion.lifecycle.viewLifecycleLazy
 import kotlinx.parcelize.Parcelize
 
-fun DatePicker(
-    title : String? = null,
-    selection : Long? = null,
-    inputMode : Int? = null,
-    @StyleRes theme : Int? = null,
-    constraints : CalendarConstraints? = null,
-    block : MaterialDatePicker<Long>.() -> Unit = {  }
-) : MaterialDatePicker<Long> = MaterialDatePicker.Builder.datePicker().apply {
-        setCalendarConstraints(constraints)
-        setSelection(selection)
-        title?.let(this::setTitleText)
-        inputMode?.let(this::setInputMode)
-        theme?.let(this::setTheme)
-    }.build().apply(block)
+inline fun Fragment.DatePicker(crossinline block: MaterialDatePicker.Builder<Long>.() -> Unit) =
+    lifecycleLazy {
+        datePicker()
+            .apply(block)
+            .build()
+    }
 
-fun Fragment.DatePickers(
-    title : String? = null,
-    selection : Long? = null,
-    inputMode : Int? = null,
-    @StyleRes theme : Int? = null,
-    constraints : CalendarConstraints? = null,
-    block : MaterialDatePicker<Long>.() -> Unit = {  }
-) : Lazy<MaterialDatePicker<Long>> = viewLifecycleLazy { com.manavtamboli.axion.ui.DatePicker(title, selection, inputMode, theme, constraints, block) }
+inline fun ComponentActivity.DatePicker(crossinline block: MaterialDatePicker.Builder<Long>.() -> Unit) =
+    lifecycleLazy {
+        datePicker()
+            .apply(block)
+            .build()
+    }
 
-fun ComponentActivity.DatePickers(
-    title : String? = null,
-    selection : Long? = null,
-    inputMode : Int? = null,
-    @StyleRes theme : Int? = null,
-    constraints : CalendarConstraints? = null,
-    block : MaterialDatePicker<Long>.() -> Unit = {  }
-) : Lazy<MaterialDatePicker<Long>> = lifecycleLazy { com.manavtamboli.axion.ui.DatePicker(title, selection, inputMode, theme, constraints, block) }
+inline fun Fragment.DateRangePicker(crossinline block: MaterialDatePicker.Builder<Pair<Long, Long>>.() -> Unit) =
+    lifecycleLazy {
+        dateRangePicker()
+            .apply(block)
+            .build()
+    }
 
-fun Fragment.DateRangePicker(
-    title : String? = null,
-    selection : Pair<Long, Long>? = null,
-    inputMode : Int? = null,
-    @StyleRes theme : Int? = null,
-    constraints : CalendarConstraints? = null,
-    block : MaterialDatePicker<Pair<Long, Long>>.() -> Unit = {  }
-) = viewLifecycleLazy {
-    MaterialDatePicker.Builder.dateRangePicker().apply {
-        setCalendarConstraints(constraints)
-        setSelection(selection)
-        title?.let(this::setTitleText)
-        inputMode?.let(this::setInputMode)
-        theme?.let(this::setTheme)
-    }.build().apply(block)
-}
+inline fun ComponentActivity.DateRangePicker(crossinline block: MaterialDatePicker.Builder<Pair<Long, Long>>.() -> Unit) =
+    lifecycleLazy {
+        dateRangePicker()
+            .apply(block)
+            .build()
+    }
 
 object CalendarConstraints {
 

@@ -16,6 +16,7 @@ fun <T> Fragment.lifecycleLazy(initializer: () -> T): Lazy<T> = object : Lifecyc
     override val owner: LifecycleOwner
         get() = this@lifecycleLazy
 }
+
 fun <T> Fragment.lifecycleLazy(initState: State, initializer: () -> T) : Lazy<T> = AutoLifecycleLazy(this, initState, initializer)
 
 
