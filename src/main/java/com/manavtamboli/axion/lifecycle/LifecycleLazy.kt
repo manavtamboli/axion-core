@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.lifecycle.Lifecycle.State
 
-fun <T> Lazy<T>.initializeOn(owner: LifecycleOwner, initState: State) : Lazy<T> = AutoLifecycleLazy(owner, initState){ value }
+// TODO
 
 fun <T> Fragment.viewLifecycleLazy(initializer : () -> T) : Lazy<T> = object : LifecycleLazy<T>(initializer) {
     override val owner: LifecycleOwner
@@ -27,7 +27,7 @@ fun <T> ComponentActivity.lifecycleLazy(initializer: () -> T) : Lazy<T> = object
 
 fun <T> ComponentActivity.lifecycleLazy(initState: State, initializer: () -> T) : Lazy<T> = AutoLifecycleLazy(this, initState, initializer)
 
-abstract class LifecycleLazy<T> (protected val initializer: () -> T): Lazy<T>, LifecycleObserver {
+abstract class LifecycleLazy<T> (protected val initializer: () -> T): Lazy<T>, DefaultLifecycleObserver {
 
     abstract val owner : LifecycleOwner
 
@@ -41,8 +41,8 @@ abstract class LifecycleLazy<T> (protected val initializer: () -> T): Lazy<T>, L
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    protected fun onDestroy(){
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
         _value = Empty
     }
 

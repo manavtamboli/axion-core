@@ -3,16 +3,14 @@ package com.manavtamboli.axion.binding
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.viewbinding.ViewBinding
 
 /**
  * Convenience class to help implement [BindingComponent].
  * */
-class Binder<B : ViewBinding> (private val bindingClass: Class<B>) : LifecycleObserver {
+class Binder<B : ViewBinding> (private val bindingClass: Class<B>) : DefaultLifecycleObserver {
 
     private var _binding: B? = null
     val binding : B get() = requireNotNull(_binding) { "Binding is either not initialized yet or already destroyed." }
@@ -25,8 +23,8 @@ class Binder<B : ViewBinding> (private val bindingClass: Class<B>) : LifecycleOb
         lifecycleOwner.lifecycle.addObserver(this)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun destroyBinding(){
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
         _binding = null
     }
 }

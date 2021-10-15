@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.LifecycleOwner
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -19,13 +18,9 @@ open class BindingBottomSheetFragment<B : ViewBinding>(bindingClass : Class<B>) 
      * */
     final override val binding get() = binder.binding
 
-    final override fun generateBinding(inflater: LayoutInflater, viewGroup: ViewGroup?, lifecycleOwner: LifecycleOwner) {
-        binder.generateBinding(inflater, viewGroup, lifecycleOwner)
-        binding.initialize()
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        generateBinding(inflater, container, viewLifecycleOwner)
+        binder.generateBinding(inflater, container, viewLifecycleOwner)
+        binding.initialize()
         return binding.root
     }
 }
